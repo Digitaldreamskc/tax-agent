@@ -1,9 +1,25 @@
 "use client";
 
 import { TrendingUp, TrendingDown, Tag, DollarSign, Lightbulb } from "lucide-react";
-import { kpiData, formatCurrency } from "@/lib/data";
+import { kpiData as mockKpiData, formatCurrency } from "@/lib/data";
 
-export default function KPICards() {
+interface KpiData {
+  netProfitYTD: number;
+  netProfitChange: number;
+  totalDeductions: number;
+  deductionsChange: number;
+  federalTax: number;
+  stateTax: number;
+  totalTax: number;
+  opportunitiesFound: number;
+  estimatedSavings: number;
+}
+
+interface KPICardsProps {
+  kpi?: KpiData;
+}
+
+export default function KPICards({ kpi = mockKpiData }: KPICardsProps) {
   return (
     <div className="grid grid-cols-4 gap-5">
       {/* Net Profit YTD */}
@@ -12,11 +28,21 @@ export default function KPICards() {
         <div className="flex items-start justify-between">
           <div>
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Net Profit YTD</p>
-            <p className="text-3xl font-bold text-[#0D1B2A] mt-1.5">{formatCurrency(kpiData.netProfitYTD)}</p>
+            <p className="text-3xl font-bold text-[#0D1B2A] mt-1.5">{formatCurrency(kpi.netProfitYTD)}</p>
             <div className="flex items-center gap-1.5 mt-2">
-              <TrendingUp size={14} className="text-emerald-500" />
-              <span className="text-xs font-semibold text-emerald-500">+{kpiData.netProfitChange}%</span>
-              <span className="text-xs text-gray-400">vs last month</span>
+              {kpi.netProfitChange >= 0 ? (
+                <TrendingUp size={14} className="text-emerald-500" />
+              ) : (
+                <TrendingDown size={14} className="text-red-500" />
+              )}
+              {kpi.netProfitChange !== 0 && (
+                <>
+                  <span className={`text-xs font-semibold ${kpi.netProfitChange >= 0 ? "text-emerald-500" : "text-red-500"}`}>
+                    {kpi.netProfitChange >= 0 ? "+" : ""}{kpi.netProfitChange}%
+                  </span>
+                  <span className="text-xs text-gray-400">vs last month</span>
+                </>
+              )}
             </div>
           </div>
           <div className="w-11 h-11 rounded-xl bg-blue-50 flex items-center justify-center flex-shrink-0">
@@ -41,11 +67,15 @@ export default function KPICards() {
         <div className="flex items-start justify-between">
           <div>
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Total Deductions</p>
-            <p className="text-3xl font-bold text-[#0D1B2A] mt-1.5">{formatCurrency(kpiData.totalDeductions)}</p>
+            <p className="text-3xl font-bold text-[#0D1B2A] mt-1.5">{formatCurrency(kpi.totalDeductions)}</p>
             <div className="flex items-center gap-1.5 mt-2">
-              <TrendingUp size={14} className="text-emerald-500" />
-              <span className="text-xs font-semibold text-emerald-500">+{kpiData.deductionsChange}%</span>
-              <span className="text-xs text-gray-400">identified YTD</span>
+              {kpi.deductionsChange !== 0 && (
+                <>
+                  <TrendingUp size={14} className="text-emerald-500" />
+                  <span className="text-xs font-semibold text-emerald-500">+{kpi.deductionsChange}%</span>
+                  <span className="text-xs text-gray-400">identified YTD</span>
+                </>
+              )}
             </div>
           </div>
           <div className="w-11 h-11 rounded-xl bg-cyan-50 flex items-center justify-center flex-shrink-0">
@@ -66,11 +96,11 @@ export default function KPICards() {
         <div className="flex items-start justify-between">
           <div>
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Est. Tax Owed</p>
-            <p className="text-3xl font-bold text-[#0D1B2A] mt-1.5">{formatCurrency(kpiData.totalTax)}</p>
+            <p className="text-3xl font-bold text-[#0D1B2A] mt-1.5">{formatCurrency(kpi.totalTax)}</p>
             <div className="flex items-center gap-1.5 mt-2">
-              <span className="text-xs font-medium text-[#F7941D]">Fed: {formatCurrency(kpiData.federalTax)}</span>
+              <span className="text-xs font-medium text-[#F7941D]">Fed: {formatCurrency(kpi.federalTax)}</span>
               <span className="text-xs text-gray-300">·</span>
-              <span className="text-xs font-medium text-purple-500">MO: {formatCurrency(kpiData.stateTax)}</span>
+              <span className="text-xs font-medium text-purple-500">MO: {formatCurrency(kpi.stateTax)}</span>
             </div>
           </div>
           <div className="w-11 h-11 rounded-xl bg-orange-50 flex items-center justify-center flex-shrink-0">
@@ -92,12 +122,16 @@ export default function KPICards() {
           <div>
             <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider">Opportunities Found</p>
             <div className="flex items-baseline gap-2 mt-1.5">
-              <p className="text-3xl font-bold text-[#0D1B2A]">{kpiData.opportunitiesFound}</p>
+              <p className="text-3xl font-bold text-[#0D1B2A]">{kpi.opportunitiesFound}</p>
               <span className="text-sm text-gray-400 font-medium">found</span>
             </div>
             <div className="flex items-center gap-1.5 mt-2">
-              <span className="text-xs font-semibold text-purple-600">{formatCurrency(kpiData.estimatedSavings)}</span>
-              <span className="text-xs text-gray-400">est. savings</span>
+              {kpi.estimatedSavings > 0 && (
+                <>
+                  <span className="text-xs font-semibold text-purple-600">{formatCurrency(kpi.estimatedSavings)}</span>
+                  <span className="text-xs text-gray-400">est. savings</span>
+                </>
+              )}
             </div>
           </div>
           <div className="w-11 h-11 rounded-xl bg-purple-50 flex items-center justify-center flex-shrink-0">

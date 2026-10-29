@@ -1,10 +1,32 @@
+export const instant = false;
+
 import KPICards from "@/components/KPICards";
 import TaxSummaryChart from "@/components/TaxSummaryChart";
 import RevenueLineChart from "@/components/RevenueLineChart";
 import TaxDonutChart from "@/components/TaxDonutChart";
 import WelcomePanel from "@/components/WelcomePanel";
+import SampleDataBanner from "@/components/SampleDataBanner";
+import { hasRealData, getLatestAnalysis } from "@/lib/db";
+import { kpiData } from "@/lib/data";
 
-export default function OverviewPage() {
+export default async function OverviewPage() {
+  const realData = await hasRealData();
+  const analysis = realData ? await getLatestAnalysis() : null;
+
+  const kpi = analysis
+    ? {
+        netProfitYTD: Math.round(analysis.net_profit ?? 0),
+        netProfitChange: 0,
+        totalDeductions: Math.round(analysis.total_deductions ?? 0),
+        deductionsChange: 0,
+        federalTax: Math.round(analysis.federal_income_tax ?? 0),
+        stateTax: Math.round(analysis.mo_state_tax ?? 0),
+        totalTax: Math.round(analysis.total_tax ?? 0),
+        opportunitiesFound: 5,
+        estimatedSavings: 0,
+      }
+    : kpiData;
+
   return (
     <div className="space-y-6">
       {/* Page header */}
@@ -13,8 +35,10 @@ export default function OverviewPage() {
         <p className="text-sm text-gray-500 mt-0.5">Tax Year 2025 — Updated Oct 29, 2025</p>
       </div>
 
+      {!realData && <SampleDataBanner />}
+
       {/* KPI Cards Row */}
-      <KPICards />
+      <KPICards kpi={kpi} />
 
       {/* Main content grid */}
       <div className="grid grid-cols-12 gap-6">

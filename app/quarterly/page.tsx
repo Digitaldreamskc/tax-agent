@@ -1,7 +1,9 @@
-"use client";
+export const instant = false;
 
 import { Calendar, CheckCircle2, Clock, AlertCircle, ExternalLink } from "lucide-react";
+import { getQuarterlyPayments, markQuarterlyPaid } from "@/lib/db";
 import { quarterlyTaxes, formatCurrency } from "@/lib/data";
+import SampleDataBanner from "@/components/SampleDataBanner";
 
 const statusConfig = {
   PAID: { icon: CheckCircle2, color: "text-emerald-500", bg: "bg-emerald-50", label: "Paid", border: "border-emerald-200" },
@@ -9,14 +11,36 @@ const statusConfig = {
   UPCOMING: { icon: Clock, color: "text-blue-500", bg: "bg-blue-50", label: "Upcoming", border: "border-blue-200" },
 };
 
-const totalFederal = quarterlyTaxes.reduce((s, q) => s + q.federal, 0);
-const totalState = quarterlyTaxes.reduce((s, q) => s + q.state, 0);
-const paidQuarters = quarterlyTaxes.filter((q) => q.status === "PAID");
-const paidFederal = paidQuarters.reduce((s, q) => s + q.federal, 0);
-const paidState = paidQuarters.reduce((s, q) => s + q.state, 0);
+async function markPaidAction(id: string) {
+  "use server";
+  const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  await markQuarterlyPaid(id, today);
+}
 
-export default function QuarterlyPage() {
-  const paidPercent = Math.round((paidQuarters.length / quarterlyTaxes.length) * 100);
+export default async function QuarterlyPage() {
+  const dbPayments = await getQuarterlyPayments();
+  const isRealData = dbPayments.length > 0;
+
+  // Normalize shape: db rows use state_tax and due_date; mock uses state and dueDate
+  const quarters = isRealData
+    ? dbPayments.map((q: any) => ({
+        id: q.id,
+        quarter: q.quarter,
+        period: q.period,
+        dueDate: q.due_date,
+        federal: q.federal ?? 0,
+        state: q.state_tax ?? 0,
+        status: q.status ?? 'DUE',
+        paidDate: q.paid_date ?? null,
+      }))
+    : quarterlyTaxes.map((q) => ({ ...q, id: undefined }));
+
+  const totalFederal = quarters.reduce((s: number, q: any) => s + q.federal, 0);
+  const totalState = quarters.reduce((s: number, q: any) => s + q.state, 0);
+  const paidQuarters = quarters.filter((q: any) => q.status === "PAID");
+  const paidFederal = paidQuarters.reduce((s: number, q: any) => s + q.federal, 0);
+  const paidState = paidQuarters.reduce((s: number, q: any) => s + q.state, 0);
+  const paidPercent = Math.round((paidQuarters.length / quarters.length) * 100) || 0;
 
   return (
     <div className="space-y-6">
@@ -24,6 +48,8 @@ export default function QuarterlyPage() {
         <h1 className="text-2xl font-bold text-[#0D1B2A]">Quarterly Taxes</h1>
         <p className="text-sm text-gray-500 mt-0.5">2025 estimated tax payment schedule</p>
       </div>
+
+      {!isRealData && <SampleDataBanner />}
 
       {/* Progress overview */}
       <div className="grid grid-cols-3 gap-5">
@@ -40,7 +66,7 @@ export default function QuarterlyPage() {
             />
           </div>
           <div className="flex items-center justify-between text-xs text-gray-400">
-            <span>{paidQuarters.length} of {quarterlyTaxes.length} quarters paid</span>
+            <span>{paidQuarters.length} of {quarters.length} quarters paid</span>
             <span className="font-semibold text-[#00AEEF]">{paidPercent}%</span>
           </div>
         </div>
@@ -59,14 +85,14 @@ export default function QuarterlyPage() {
 
       {/* Quarter cards */}
       <div className="grid grid-cols-2 gap-5">
-        {quarterlyTaxes.map((q, i) => {
-          const config = statusConfig[q.status as keyof typeof statusConfig];
+        {quarters.map((q: any, i: number) => {
+          const config = statusConfig[q.status as keyof typeof statusConfig] ?? statusConfig.UPCOMING;
           const StatusIcon = config.icon;
           const isNext = q.status === "DUE";
 
           return (
             <div
-              key={i}
+              key={q.id ?? i}
               className={`bg-white rounded-2xl shadow-sm border-2 p-5 ${
                 isNext ? "border-[#F7941D]" : "border-gray-100"
               }`}
@@ -118,6 +144,16 @@ export default function QuarterlyPage() {
                     <CheckCircle2 size={14} />
                     Paid {q.paidDate}
                   </div>
+                ) : isRealData && q.id ? (
+                  <form action={markPaidAction.bind(null, q.id)}>
+                    <button
+                      type="submit"
+                      className="flex items-center gap-1.5 px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white text-xs font-bold rounded-xl transition-colors"
+                    >
+                      <CheckCircle2 size={12} />
+                      Mark as Paid
+                    </button>
+                  </form>
                 ) : (
                   <a
                     href="https://www.irs.gov/payments/direct-pay"
