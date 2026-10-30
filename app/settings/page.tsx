@@ -1,11 +1,12 @@
-import { Settings, User, Bell, Shield, CreditCard } from "lucide-react";
+import MCPConnections from "@/components/MCPConnections";
+import { Settings, User, Bell } from "lucide-react";
 
 export default function SettingsPage() {
   return (
     <div className="space-y-6 max-w-2xl">
       <div>
         <h1 className="text-2xl font-bold text-[#0D1B2A]">Settings</h1>
-        <p className="text-sm text-gray-500 mt-0.5">Manage your account and preferences</p>
+        <p className="text-sm text-gray-500 mt-0.5">Manage your account, preferences, and connected services</p>
       </div>
 
       {/* Profile */}
@@ -55,21 +56,16 @@ export default function SettingsPage() {
                 <p className="text-sm font-semibold text-[#0D1B2A]">{item.label}</p>
                 <p className="text-xs text-gray-400">{item.sub}</p>
               </div>
-              <div
-                className={`w-11 h-6 rounded-full relative cursor-pointer transition-colors ${
-                  item.on ? "bg-[#00AEEF]" : "bg-gray-200"
-                }`}
-              >
-                <div
-                  className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${
-                    item.on ? "translate-x-6" : "translate-x-1"
-                  }`}
-                />
+              <div className={`w-11 h-6 rounded-full relative cursor-pointer transition-colors ${item.on ? "bg-[#00AEEF]" : "bg-gray-200"}`}>
+                <div className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow-sm transition-transform ${item.on ? "translate-x-6" : "translate-x-1"}`} />
               </div>
             </div>
           ))}
         </div>
       </div>
+
+      {/* MCP Connections — client component */}
+      <MCPConnections />
     </div>
   );
 }

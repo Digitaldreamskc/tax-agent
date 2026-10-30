@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { Download, AlertCircle, CheckCircle2, FileText, Loader2 } from "lucide-react";
 import { useEntityType } from "@/context/EntityTypeContext";
+import ShareWithCPA from "./ShareWithCPA";
 
 // ── number derivation ─────────────────────────────────────────────────────────
 
@@ -262,13 +263,20 @@ export default function TaxPacketClient() {
               {isNonprofit ? "Nonprofit — Form 990 series" : "Self-employed — Schedule C + 1040"} · Tax Year 2025
             </p>
           </div>
-          <button
-            onClick={handlePrint}
-            className="flex items-center gap-2 px-4 py-2.5 bg-[#00AEEF] hover:bg-[#0096CC] text-white text-sm font-bold rounded-xl transition-colors"
-          >
-            <Download size={16} />
-            Download PDF
-          </button>
+          <div className="flex gap-2">
+            <ShareWithCPA
+              numbers={n}
+              isNonprofit={isNonprofit}
+              fmt={fmt}
+            />
+            <button
+              onClick={handlePrint}
+              className="flex items-center gap-2 px-4 py-2.5 bg-[#00AEEF] hover:bg-[#0096CC] text-white text-sm font-bold rounded-xl transition-colors"
+            >
+              <Download size={16} />
+              Download PDF
+            </button>
+          </div>
         </div>
 
         {isSample && (
