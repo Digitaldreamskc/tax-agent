@@ -16,7 +16,6 @@ import {
   HeartHandshake,
   ClipboardList,
   BadgeDollarSign,
-  Users,
   ShieldCheck,
 } from "lucide-react";
 import Back2KCLogo from "./Back2KCLogo";
@@ -42,6 +41,7 @@ const businessNav: NavGroup[] = [
       { href: "/income", label: "Income", icon: TrendingUp },
       { href: "/expenses", label: "Expenses", icon: Receipt },
       { href: "/deductions", label: "Deductions", icon: Tag },
+      { href: "/exemptions", label: "Exemptions", icon: ShieldCheck },
       { href: "/quarterly", label: "Quarterly Taxes", icon: Calendar },
     ],
   },
