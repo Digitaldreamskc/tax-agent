@@ -12,23 +12,85 @@ import {
   Lightbulb,
   FileText,
   Settings,
+  Building2,
+  HeartHandshake,
+  ClipboardList,
+  BadgeDollarSign,
+  Users,
+  ShieldCheck,
 } from "lucide-react";
 import Back2KCLogo from "./Back2KCLogo";
+import { useEntityType } from "@/context/EntityTypeContext";
 
-const navItems = [
-  { href: "/", label: "Overview", icon: LayoutDashboard },
-  { href: "/income", label: "Income", icon: TrendingUp },
-  { href: "/expenses", label: "Expenses", icon: Receipt },
-  { href: "/deductions", label: "Deductions", icon: Tag },
-  { href: "/quarterly", label: "Quarterly Taxes", icon: Calendar },
-  { href: "/upload", label: "Upload Documents", icon: Upload },
-  { href: "/opportunities", label: "Opportunities", icon: Lightbulb },
-  { href: "/reports", label: "Reports", icon: FileText },
-  { href: "/settings", label: "Settings", icon: Settings },
+type NavItem = {
+  href: string;
+  label: string;
+  icon: React.ElementType;
+  badge?: string;
+};
+
+type NavGroup = {
+  section: string;
+  items: NavItem[];
+};
+
+const businessNav: NavGroup[] = [
+  {
+    section: "Main Menu",
+    items: [
+      { href: "/", label: "Overview", icon: LayoutDashboard },
+      { href: "/income", label: "Income", icon: TrendingUp },
+      { href: "/expenses", label: "Expenses", icon: Receipt },
+      { href: "/deductions", label: "Deductions", icon: Tag },
+      { href: "/quarterly", label: "Quarterly Taxes", icon: Calendar },
+    ],
+  },
+  {
+    section: "Tools",
+    items: [
+      { href: "/upload", label: "Upload Documents", icon: Upload },
+      { href: "/opportunities", label: "Opportunities", icon: Lightbulb, badge: "8" },
+      { href: "/reports", label: "Reports", icon: FileText },
+      { href: "/settings", label: "Settings", icon: Settings },
+    ],
+  },
+];
+
+const nonprofitNav: NavGroup[] = [
+  {
+    section: "Main Menu",
+    items: [
+      { href: "/", label: "Overview", icon: LayoutDashboard },
+      { href: "/income", label: "Revenue & Grants", icon: TrendingUp },
+      { href: "/expenses", label: "Expenses", icon: Receipt },
+      { href: "/nonprofit/990", label: "Form 990 Filing", icon: ClipboardList },
+      { href: "/nonprofit/exemptions", label: "Exemptions", icon: ShieldCheck },
+    ],
+  },
+  {
+    section: "Compliance",
+    items: [
+      { href: "/nonprofit/donors", label: "Donor Rules", icon: HeartHandshake },
+      { href: "/nonprofit/compliance", label: "Compliance Calendar", icon: Calendar },
+      { href: "/nonprofit/ubit", label: "UBIT Tracker", icon: BadgeDollarSign },
+    ],
+  },
+  {
+    section: "Tools",
+    items: [
+      { href: "/upload", label: "Upload Documents", icon: Upload },
+      { href: "/opportunities", label: "Opportunities", icon: Lightbulb },
+      { href: "/reports", label: "Reports", icon: FileText },
+      { href: "/settings", label: "Settings", icon: Settings },
+    ],
+  },
 ];
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const { entityType, setEntityType, isNonprofit } = useEntityType();
+
+  const navGroups = isNonprofit ? nonprofitNav : businessNav;
 
   return (
     <aside className="fixed left-0 top-0 h-full w-[240px] bg-white border-r border-gray-100 shadow-sm flex flex-col z-50">
@@ -38,72 +100,82 @@ export default function Sidebar() {
         <p className="text-xs text-gray-400 mt-1 ml-0.5">Tax Advisor Dashboard</p>
       </div>
 
-      {/* Navigation */}
-      <nav className="flex-1 px-3 py-4 overflow-y-auto">
-        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-3">
-          Main Menu
+      {/* Entity type toggle */}
+      <div className="px-4 py-3 border-b border-gray-100">
+        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">
+          Filing Type
         </p>
-        <ul className="space-y-1">
-          {navItems.slice(0, 5).map((item) => {
-            const Icon = item.icon;
-            const isActive = pathname === item.href;
-            return (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group ${
-                    isActive
-                      ? "bg-[#00AEEF] text-white shadow-sm"
-                      : "text-gray-500 hover:bg-blue-50 hover:text-[#00AEEF]"
-                  }`}
-                >
-                  <Icon
-                    size={18}
-                    className={`flex-shrink-0 transition-colors ${
-                      isActive ? "text-white" : "text-gray-400 group-hover:text-[#00AEEF]"
-                    }`}
-                  />
-                  {item.label}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+        <div className="flex bg-[#F4F7FE] rounded-xl p-0.5 gap-0.5">
+          <button
+            onClick={() => setEntityType("business")}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-semibold transition-all duration-150 ${
+              !isNonprofit
+                ? "bg-[#00AEEF] text-white shadow-sm"
+                : "text-gray-500 hover:text-[#00AEEF]"
+            }`}
+          >
+            <Building2 size={13} />
+            Business
+          </button>
+          <button
+            onClick={() => setEntityType("nonprofit")}
+            className={`flex-1 flex items-center justify-center gap-1.5 py-2 px-2 rounded-lg text-xs font-semibold transition-all duration-150 ${
+              isNonprofit
+                ? "bg-[#00AEEF] text-white shadow-sm"
+                : "text-gray-500 hover:text-[#00AEEF]"
+            }`}
+          >
+            <HeartHandshake size={13} />
+            Nonprofit
+          </button>
+        </div>
+        {isNonprofit && (
+          <p className="text-[10px] text-[#00AEEF] mt-1.5 text-center font-medium">
+            501(c)(3) · Form 990 mode
+          </p>
+        )}
+      </div>
 
-        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-3 mt-6">
-          Tools
-        </p>
-        <ul className="space-y-1">
-          {navItems.slice(5).map((item) => {
-            const Icon = item.icon;
-            const isActive = pathname === item.href;
-            return (
-              <li key={item.href}>
-                <Link
-                  href={item.href}
-                  className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group ${
-                    isActive
-                      ? "bg-[#00AEEF] text-white shadow-sm"
-                      : "text-gray-500 hover:bg-blue-50 hover:text-[#00AEEF]"
-                  }`}
-                >
-                  <Icon
-                    size={18}
-                    className={`flex-shrink-0 transition-colors ${
-                      isActive ? "text-white" : "text-gray-400 group-hover:text-[#00AEEF]"
-                    }`}
-                  />
-                  {item.label}
-                  {item.label === "Opportunities" && (
-                    <span className="ml-auto bg-[#F7941D] text-white text-xs font-bold px-2 py-0.5 rounded-full">
-                      8
-                    </span>
-                  )}
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
+      {/* Navigation */}
+      <nav className="flex-1 px-3 py-3 overflow-y-auto">
+        {navGroups.map((group) => (
+          <div key={group.section} className="mb-2">
+            <p className="text-xs font-semibold text-gray-400 uppercase tracking-wider px-3 mb-2 mt-3">
+              {group.section}
+            </p>
+            <ul className="space-y-0.5">
+              {group.items.map((item) => {
+                const Icon = item.icon;
+                const isActive = pathname === item.href;
+                return (
+                  <li key={item.href}>
+                    <Link
+                      href={item.href}
+                      className={`flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-150 group ${
+                        isActive
+                          ? "bg-[#00AEEF] text-white shadow-sm"
+                          : "text-gray-500 hover:bg-blue-50 hover:text-[#00AEEF]"
+                      }`}
+                    >
+                      <Icon
+                        size={18}
+                        className={`flex-shrink-0 transition-colors ${
+                          isActive ? "text-white" : "text-gray-400 group-hover:text-[#00AEEF]"
+                        }`}
+                      />
+                      {item.label}
+                      {"badge" in item && item.badge && (
+                        <span className="ml-auto bg-[#F7941D] text-white text-xs font-bold px-2 py-0.5 rounded-full">
+                          {item.badge}
+                        </span>
+                      )}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </div>
+        ))}
       </nav>
 
       {/* Bottom profile area */}
@@ -114,7 +186,9 @@ export default function Sidebar() {
           </div>
           <div className="overflow-hidden">
             <p className="text-sm font-semibold text-gray-800 truncate">Jessica Powell</p>
-            <p className="text-xs text-gray-400 truncate">Back2KC LLC</p>
+            <p className="text-xs text-gray-400 truncate">
+              {isNonprofit ? "Back2KC · Nonprofit" : "Back2KC LLC"}
+            </p>
           </div>
         </div>
       </div>
