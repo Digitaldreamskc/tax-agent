@@ -17,6 +17,7 @@ import {
   ClipboardList,
   BadgeDollarSign,
   ShieldCheck,
+  PackageOpen,
 } from "lucide-react";
 import Back2KCLogo from "./Back2KCLogo";
 import { useEntityType } from "@/context/EntityTypeContext";
@@ -49,6 +50,7 @@ const businessNav: NavGroup[] = [
     section: "Tools",
     items: [
       { href: "/upload", label: "Upload Documents", icon: Upload },
+      { href: "/tax-packet", label: "Tax Packet", icon: PackageOpen },
       { href: "/opportunities", label: "Opportunities", icon: Lightbulb, badge: "8" },
       { href: "/reports", label: "Reports", icon: FileText },
       { href: "/settings", label: "Settings", icon: Settings },
@@ -79,6 +81,7 @@ const nonprofitNav: NavGroup[] = [
     section: "Tools",
     items: [
       { href: "/upload", label: "Upload Documents", icon: Upload },
+      { href: "/tax-packet", label: "Tax Packet", icon: PackageOpen },
       { href: "/opportunities", label: "Opportunities", icon: Lightbulb },
       { href: "/reports", label: "Reports", icon: FileText },
       { href: "/settings", label: "Settings", icon: Settings },

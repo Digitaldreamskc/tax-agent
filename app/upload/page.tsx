@@ -268,15 +268,28 @@ export default function UploadPage() {
 
       {/* Success banner */}
       {analysisSuccess && (
-        <div className="bg-emerald-50 border border-emerald-200 rounded-xl px-4 py-3 flex items-center gap-3">
-          <CheckCircle2 size={18} className="text-emerald-500 flex-shrink-0" />
-          <div>
-            <p className="text-sm font-semibold text-emerald-800">Analysis complete — dashboard updated</p>
-            <p className="text-xs text-emerald-700">Your real data is now showing on the overview dashboard.</p>
+        <div className="bg-emerald-50 border border-emerald-200 rounded-2xl px-5 py-4">
+          <div className="flex items-start gap-3">
+            <CheckCircle2 size={18} className="text-emerald-500 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-emerald-800">Analysis complete</p>
+              <p className="text-xs text-emerald-700 mt-0.5">All numbers computed and saved. View your results below.</p>
+            </div>
           </div>
-          <a href="/" className="ml-auto text-xs bg-emerald-500 text-white px-3 py-1.5 rounded-lg font-medium hover:bg-emerald-600">
-            View Dashboard →
-          </a>
+          <div className="flex gap-3 mt-3">
+            <a
+              href="/tax-packet"
+              className="flex-1 text-center text-sm font-bold bg-[#00AEEF] hover:bg-[#0096CC] text-white px-4 py-2.5 rounded-xl transition-colors"
+            >
+              View Tax Packet →
+            </a>
+            <a
+              href="/"
+              className="flex-1 text-center text-sm font-semibold bg-white border border-emerald-300 text-emerald-700 hover:bg-emerald-50 px-4 py-2.5 rounded-xl transition-colors"
+            >
+              View Dashboard
+            </a>
+          </div>
         </div>
       )}
 
