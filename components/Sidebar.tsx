@@ -18,6 +18,7 @@ import {
   BadgeDollarSign,
   ShieldCheck,
   PackageOpen,
+  LogOut,
 } from "lucide-react";
 import Back2KCLogo from "./Back2KCLogo";
 import { useEntityType } from "@/context/EntityTypeContext";
@@ -181,18 +182,25 @@ export default function Sidebar() {
         ))}
       </nav>
 
-      {/* Bottom profile area */}
+      {/* Bottom profile + logout */}
       <div className="px-4 py-4 border-t border-gray-100">
         <div className="flex items-center gap-3">
           <div className="w-9 h-9 rounded-full bg-[#00AEEF] flex items-center justify-center text-white text-sm font-bold flex-shrink-0">
             JP
           </div>
-          <div className="overflow-hidden">
+          <div className="overflow-hidden flex-1">
             <p className="text-sm font-semibold text-gray-800 truncate">Jessica Powell</p>
             <p className="text-xs text-gray-400 truncate">
               {isNonprofit ? "Back2KC · Nonprofit" : "Back2KC LLC"}
             </p>
           </div>
+          <a
+            href="/api/auth/logout"
+            title="Sign out"
+            className="text-gray-400 hover:text-red-500 transition-colors flex-shrink-0"
+          >
+            <LogOut size={16} />
+          </a>
         </div>
       </div>
     </aside>
